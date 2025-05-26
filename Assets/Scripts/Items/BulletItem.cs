@@ -6,6 +6,7 @@ namespace Items
     public class BulletItem : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer bulletSpriteRenderer;
+        [SerializeField] private TMPro.TMP_Text bulletText;
 
         private int _damage;
         private float _speed;
@@ -19,6 +20,15 @@ namespace Items
             _damage = damage;
             _speed = speed;
             _attackDirection = attackDirection;
+            
+            if (bulletText)
+            {
+                bulletText.text = _damage.ToString();
+            }
+            else
+            {
+                Debug.LogWarning("Bullet Text is not assigned in BulletItem.");
+            }
         }
 
         public void SetTargetCell(Transform targetCell)

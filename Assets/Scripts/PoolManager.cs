@@ -103,4 +103,15 @@ public class PoolManager : MonoBehaviour
         
         return true;
     }
+    
+    public int GetCountOfTypeInPool(Constants.Type type)
+    {
+        if (_poolDictionary.ContainsKey(type))
+        {
+            return _poolDictionary[type].Count;
+        }
+        
+        Debug.LogWarning($"Pool with tag {type} doesn't exist.");
+        return 0;
+    }
 }

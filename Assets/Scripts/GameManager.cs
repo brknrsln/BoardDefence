@@ -169,14 +169,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void PlaceDefenceItem(int itemTypeIndex)
+    public void PlaceDefenceItem(Constants.Type itemType)
     {
         if (!_selectedCell) return;
         
-        var defenceItemType = Constants.DefenceItemDataDictionary[itemTypeIndex].Type;
 
         var defenceItemGO = PoolManager.Instance.SpawnFromPool(
-            defenceItemType, _selectedCell.transform.position, Quaternion.identity);
+            itemType, _selectedCell.transform.position, Quaternion.identity);
         
         if (defenceItemGO)
         {
@@ -185,7 +184,7 @@ public class GameManager : MonoBehaviour
             if (!newDefenceItem)
             {
                 _selectedCell = null;
-                PoolManager.Instance.ReturnToPool(defenceItemType, defenceItemGO);
+                PoolManager.Instance.ReturnToPool(itemType, defenceItemGO);
                 Debug.LogError("Spawned defence item GameObject does not have a DefenceItem component!");
                 return;
             }
@@ -196,11 +195,11 @@ public class GameManager : MonoBehaviour
 
             _selectedCell.PlaceDefenceItem(newDefenceItem);
 
-            Debug.Log($"Placed Defence Item {itemTypeIndex} at Row: {_selectedCell.yIndex}, Column: {_selectedCell.xIndex}");
+            Debug.Log($"Placed Defence Item {itemType} at Row: {_selectedCell.yIndex}, Column: {_selectedCell.xIndex}");
         }
         else
         {
-            Debug.LogError($"Invalid Defence Item Type Index: {itemTypeIndex}");
+            Debug.LogError($"Invalid Defence Item Type Index: {itemType}");
         }
 
         if (defenceSelectionUIPanel)
