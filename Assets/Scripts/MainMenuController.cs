@@ -22,7 +22,7 @@ public class MainMenuController : MonoBehaviour
         
         levelText.text = "Level: " + currentLevel;
 
-        if (currentLevel >= Constants.LevelDataDictionary.Count)
+        if (currentLevel > Constants.LevelDataDictionary.Count)
         {
             startButton.interactable = false;
             startButton.GetComponentInChildren<TMPro.TMP_Text>().text = "Max Level Reached";
