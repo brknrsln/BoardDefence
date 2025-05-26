@@ -5,7 +5,7 @@ namespace Board
 {
     public class Cell : MonoBehaviour
     {
-        [SerializeField] private SpriteRenderer spriteRenderer; 
+        public SpriteRenderer cellSpriteRenderer; 
         
         public int xIndex;
         public int yIndex;
@@ -23,15 +23,15 @@ namespace Board
             this.xIndex = xIndex;
             IsDefencePlacementArea = isDefencePlacementArea;
 
-            if (spriteRenderer)
+            if (cellSpriteRenderer)
             {
-                spriteRenderer.color = IsDefencePlacementArea ? placementAreaColor : normalColor;
+                cellSpriteRenderer.color = IsDefencePlacementArea ? placementAreaColor : normalColor;
             }
         }
         
         public void PlaceDefenceItem(DefenceItem item)
         {
-            if (IsDefencePlacementArea && PlacedDefenceItem == null)
+            if (IsDefencePlacementArea && !PlacedDefenceItem)
             {
                 PlacedDefenceItem = item;
                 Debug.Log($"Defence Item placed at Row: {yIndex}, Column: {xIndex}");

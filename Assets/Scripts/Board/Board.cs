@@ -10,6 +10,8 @@ namespace Board
         [SerializeField] private float cellSpacing = 1.1f; 
         
         private Cell[,] _cells;
+        
+        public bool IsInitialized { get; private set; }
 
         private void Awake()
         {
@@ -48,6 +50,19 @@ namespace Board
                     cellObject.name = $"Cell ({y}, {x})";
                 }
             }
+            IsInitialized = true;
+        }
+        
+        public Cell GetCell(int row, int column)
+        {
+            if (row is >= 0 and < Constants.BoardRows && column is >= 0 and < Constants.BoardColumns)
+            {
+                return _cells[row, column];
+            }
+            
+            Debug.LogError($"Invalid cell indices: ({row}, {column})");
+            
+            return null;
         }
     }
 }
