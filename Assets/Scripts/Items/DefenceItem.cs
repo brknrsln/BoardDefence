@@ -51,14 +51,14 @@ namespace Items
                     {
                         bulletGO = Instantiate(bulletPrefab, transform);
                         bulletItem = bulletGO.GetComponent<BulletItem>();
-                        bulletItem.Initialize(Damage, _attackDurationInSeconds, (Constants.AttackDirection)i);
+                        bulletItem.Initialize(Damage, Range, _attackDurationInSeconds, (Constants.AttackDirection)i);
                         _bulletItems.Add(bulletGO.GetComponent<BulletItem>());
                     }
                     break;
                 default:
                     bulletGO = Instantiate(bulletPrefab, transform);
                     bulletItem = bulletGO.GetComponent<BulletItem>();
-                    bulletItem.Initialize(Damage, _attackDurationInSeconds, AttackDirection);
+                    bulletItem.Initialize(Damage, Range, _attackDurationInSeconds, AttackDirection);
                     _bulletItems.Add(bulletItem);
                     break;
             }
@@ -66,8 +66,6 @@ namespace Items
         
         public void Initialize(Cell cell)
         {
-            TargetCells(cell);
-
             if (defenceSpriteRenderer)
             {
                 defenceSpriteRenderer.color = Color.blue;
@@ -97,77 +95,6 @@ namespace Items
             _attackSequence.Play();
         }
 
-
-        private void TargetCells(Cell cell)
-        {
-            var targetRow = cell.yIndex;
-            var targetColumn = cell.xIndex;
-            
-            var upperRow = targetRow - Range;
-            if (upperRow < 0)
-            {
-                upperRow = 0; // Ensure we don't go out of bounds
-            }
-            var lowerRow = targetRow + Range;
-            if (lowerRow >= Constants.BoardRows)
-            {
-                lowerRow = Constants.BoardRows - 1; // Ensure we don't go out of bounds
-            }
-            var leftColumn = targetColumn - Range;
-            if (leftColumn < 0)
-            {
-                leftColumn = 0; // Ensure we don't go out of bounds
-            }
-            var rightColumn = targetColumn + Range;
-            if (rightColumn >= Constants.BoardColumns)
-            {
-                rightColumn = Constants.BoardColumns - 1; // Ensure we don't go out of bounds
-            }
-
-            Cell targetCell;
-            BulletItem bulletItem;
-
-            switch (AttackDirection)
-            {
-                case Constants.AttackDirection.Forward:
-                    targetCell = GameManager.Instance.board.GetCell(upperRow, targetColumn);
-                    bulletItem = _bulletItems[0];
-                    bulletItem.SetTargetCell(targetCell.transform);
-                    break;
-                case Constants.AttackDirection.Backward:
-                    targetCell = GameManager.Instance.board.GetCell(lowerRow, targetColumn);
-                    bulletItem = _bulletItems[0];
-                    bulletItem.SetTargetCell(targetCell.transform);
-                    break;
-                case Constants.AttackDirection.Left:
-                    targetCell = GameManager.Instance.board.GetCell(targetRow, leftColumn);
-                    bulletItem = _bulletItems[0];
-                    bulletItem.SetTargetCell(targetCell.transform);
-                    break;
-                case Constants.AttackDirection.Right:
-                    targetCell = GameManager.Instance.board.GetCell(targetRow, rightColumn);
-                    bulletItem = _bulletItems[0];
-                    bulletItem.SetTargetCell(targetCell.transform);
-                    break;
-                case Constants.AttackDirection.All:
-                    targetCell = GameManager.Instance.board.GetCell(upperRow, targetColumn);
-                    bulletItem = _bulletItems[0];
-                    bulletItem.SetTargetCell(targetCell.transform);
-                    targetCell = GameManager.Instance.board.GetCell(targetRow, leftColumn);
-                    bulletItem = _bulletItems[1];
-                    bulletItem.SetTargetCell(targetCell.transform);
-                    targetCell = GameManager.Instance.board.GetCell(lowerRow, targetColumn);
-                    bulletItem = _bulletItems[2];
-                    bulletItem.SetTargetCell(targetCell.transform);
-                    targetCell = GameManager.Instance.board.GetCell(targetRow, rightColumn);
-                    bulletItem = _bulletItems[3];
-                    bulletItem.SetTargetCell(targetCell.transform);
-                    break;
-                default:
-                    throw new System.ArgumentOutOfRangeException(nameof(AttackDirection), AttackDirection, null);
-            }
-        }
-        
         public void StopAttack()
         {
             foreach (var bulletItem in _bulletItems)

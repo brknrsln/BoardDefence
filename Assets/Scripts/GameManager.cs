@@ -17,12 +17,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float maxEnemySpawnInterval = 3f;
 
     [SerializeField] private GameObject defenceSelectionUIPanel;
+    [SerializeField] private GameObject closeDefenceSelectionButton;
     [SerializeField] private GameObject gameOverUIPanel;
     [SerializeField] private GameObject levelWinUIPanel;
     
     [SerializeField] private Camera levelCamera;
     
-    private const float SelectionRaycastDistance = 100f;
     
     private readonly List<Enemy> _activeEnemies = new();
     private readonly List<DefenceItem> _defenceItems = new();
@@ -31,8 +31,6 @@ public class GameManager : MonoBehaviour
     
     private bool _isEnemySpawnFinished;
     private bool _isGameOver;
-    private bool _levelWin;
-    private bool _isDefenceSelectionPanelActive;
 
     private void Awake()
     {
@@ -45,10 +43,7 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (defenceSelectionUIPanel)
-        {
-            defenceSelectionUIPanel.SetActive(false);
-        }
+        CloseDefenceSelectionPanel();
     }
         
     private void Start()
@@ -67,17 +62,6 @@ public class GameManager : MonoBehaviour
 
         InvokeRepeating(nameof(StartSpawningEnemies), initialEnemySpawnDelay, 
             Random.Range(minEnemySpawnInterval, maxEnemySpawnInterval));
-    }
-
-    private void FixedUpdate()
-    {
-        if (_isGameOver) return;
-        
-        if (_levelWin) return;
-
-        if (_selectedCell && _isDefenceSelectionPanelActive) return;
-        
-        HandlePlayerInput();
     }
 
     private void StartSpawningEnemies()
@@ -126,56 +110,27 @@ public class GameManager : MonoBehaviour
             Random.Range(minEnemySpawnInterval, maxEnemySpawnInterval), 0f);
     }
         
-    private void HandlePlayerInput()
+    public void OnClickCellButton(Cell cell)
     {
-        if (!Input.GetMouseButton(0) && Input.touchCount == 0)
-        {
-            return;
-        }
-
-        _isDefenceSelectionPanelActive = true;
+        _selectedCell = cell;
         
-        Vector3 pointer = Application.isEditor ? Input.mousePosition : Input.GetTouch(0).position;
+        if (!defenceSelectionUIPanel) return;
         
-        Vector2 pointerPos = levelCamera.ScreenToWorldPoint(pointer);
+        defenceSelectionUIPanel.SetActive(true);
         
-        var pointerRaycastHit2D = Physics2D.Raycast(pointerPos, 
-            Vector2.zero, SelectionRaycastDistance, LayerMask.GetMask("Default"));
-
-        if (!pointerRaycastHit2D.collider) return;
-        var clickedCell = pointerRaycastHit2D.collider.GetComponent<Cell>();
-        if (!clickedCell) return;
-        Debug.Log($"Clicked Cell: Row {clickedCell.yIndex}, Column {clickedCell.xIndex}");
-
-        if (clickedCell.IsDefencePlacementArea && !clickedCell.PlacedDefenceItem)
+        if (closeDefenceSelectionButton)
         {
-            _selectedCell = clickedCell;
-            
-            if (!defenceSelectionUIPanel) return;
-            
-            defenceSelectionUIPanel.SetActive(true);
-        }
-        else
-        {
-            _selectedCell = null;
-            _isDefenceSelectionPanelActive = false;
-            
-            if (defenceSelectionUIPanel)
-            {
-                defenceSelectionUIPanel.SetActive(false);
-            }
-            
-            Debug.LogWarning("Cannot place defence item here.");
+            closeDefenceSelectionButton.SetActive(true);
         }
     }
 
-    public void PlaceDefenceItem(Constants.Type itemType)
+    public void PlaceDefenceItem(Constants.ObjectItemType itemObjectItemType)
     {
         if (!_selectedCell) return;
         
 
         var defenceItemGO = PoolManager.Instance.SpawnFromPool(
-            itemType, _selectedCell.transform.position, Quaternion.identity);
+            itemObjectItemType, _selectedCell.transform.position, Quaternion.identity);
         
         if (defenceItemGO)
         {
@@ -184,7 +139,7 @@ public class GameManager : MonoBehaviour
             if (!newDefenceItem)
             {
                 _selectedCell = null;
-                PoolManager.Instance.ReturnToPool(itemType, defenceItemGO);
+                PoolManager.Instance.ReturnToPool(itemObjectItemType, defenceItemGO);
                 Debug.LogError("Spawned defence item GameObject does not have a DefenceItem component!");
                 return;
             }
@@ -194,21 +149,30 @@ public class GameManager : MonoBehaviour
             _defenceItems.Add(newDefenceItem);
 
             _selectedCell.PlaceDefenceItem(newDefenceItem);
-
-            Debug.Log($"Placed Defence Item {itemType} at Row: {_selectedCell.yIndex}, Column: {_selectedCell.xIndex}");
         }
         else
         {
-            Debug.LogError($"Invalid Defence Item Type Index: {itemType}");
+            Debug.LogError($"Invalid Defence Item Type Index: {itemObjectItemType}");
         }
 
+        CloseDefenceSelectionPanel();
+        
+        _selectedCell = null;
+    }
+    
+    public void CloseDefenceSelectionPanel()
+    {
         if (defenceSelectionUIPanel)
         {
             defenceSelectionUIPanel.SetActive(false);
         }
+
+        if (closeDefenceSelectionButton)
+        {
+            closeDefenceSelectionButton.SetActive(false);
+        }
         
         _selectedCell = null;
-        _isDefenceSelectionPanelActive = false;
     }
 
     public void EnemiesReachedBase()
@@ -247,8 +211,6 @@ public class GameManager : MonoBehaviour
 
         if (!_isEnemySpawnFinished) return;
         
-        _levelWin = true;
-            
         foreach (var defenceItem in _defenceItems)
         {
             defenceItem.StopAttack();

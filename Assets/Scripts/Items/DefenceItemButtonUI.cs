@@ -7,7 +7,7 @@ namespace Items
     {
         [SerializeField] private TMPro.TMP_Text countText;
         [SerializeField] private Button button;
-        [SerializeField] private Constants.Type defenceType;
+        [SerializeField] private Constants.ObjectItemType defenceObjectItemType;
 
         private void Awake()
         {
@@ -31,13 +31,13 @@ namespace Items
 
         private void OnButtonClick()
         {
-            GameManager.Instance.PlaceDefenceItem(defenceType);
+            GameManager.Instance.PlaceDefenceItem(defenceObjectItemType);
         }
 
         private void UpdateCountText()
         {
-            countText.text = $"{PoolManager.Instance.GetCountOfTypeInPool(defenceType)}";
-            button.interactable = PoolManager.Instance.GetCountOfTypeInPool(defenceType) > 0;
+            countText.text = $"{PoolManager.Instance.GetCountOfTypeInPool(defenceObjectItemType)}";
+            button.interactable = PoolManager.Instance.GetCountOfTypeInPool(defenceObjectItemType) > 0;
         }
     }
 }

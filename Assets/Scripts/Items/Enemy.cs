@@ -11,7 +11,7 @@ namespace Items
         
         protected int TypeIndex;
 
-        private Constants.Type Type { get; set; }
+        private Constants.ObjectItemType ObjectItemType { get; set; }
         private int Health { get; set; }
         private float SpeedInSeconds { get; set; }
 
@@ -25,30 +25,16 @@ namespace Items
             Initialize();
         }
 
-        private void FixedUpdate()
-        {
-            var targetRow = CurrentRow + 1;
-
-            if (targetRow > CurrentRow) return;
-            
-            var targetCell = GameManager.Instance.board.GetCell(targetRow, CurrentColumn);
-            
-            if (Vector3.Distance(transform.position, targetCell.transform.position) < 0.05f)
-            {
-                CurrentRow = targetRow; 
-            }
-        }
-
         private void Move()
         {
-                var targetCell = GameManager.Instance.board.GetCell(Constants.BoardRows - 1, CurrentColumn);
-                
-                if (!targetCell) return;
-                
-                transform.DOMoveY(
-                    targetCell.transform.position.y, Constants.BoardRows / SpeedInSeconds)
-                    .SetEase(Ease.Linear)
-                    .OnComplete(GameManager.Instance.EnemiesReachedBase);
+            var targetCell = GameManager.Instance.board.GetCell(Constants.BoardRows - 1, CurrentColumn);
+            
+            if (!targetCell) return;
+            
+            transform.DOMoveY(
+                targetCell.transform.position.y, Constants.BoardRows / SpeedInSeconds)
+                .SetEase(Ease.Linear)
+                .OnComplete(GameManager.Instance.EnemiesReachedBase);
         }
 
         private void Initialize()
@@ -56,7 +42,7 @@ namespace Items
             var data = Constants.EnemyDataDictionary[TypeIndex];
             Health = data.Health;
             SpeedInSeconds = data.Speed;
-            Type = data.Type;
+            ObjectItemType = data.ObjectItemType;
             _currentHealth = Health;
             
             UpdateHpText();
@@ -94,7 +80,7 @@ namespace Items
             
             Move();
             
-            Debug.Log($"{typeof(Constants.Type)} initialized at Row: {CurrentRow}, Column: {CurrentColumn} with Health: {_currentHealth}");
+            Debug.Log($"{typeof(Constants.ObjectItemType)} initialized at Row: {CurrentRow}, Column: {CurrentColumn} with Health: {_currentHealth}");
         }
         
         public void TakeDamage(int damageAmount)
@@ -103,7 +89,7 @@ namespace Items
             
             UpdateHpText();
             
-            Debug.Log($"{typeof(Constants.Type)} took {damageAmount} damage. Remaining Health: {_currentHealth}");
+            Debug.Log($"{typeof(Constants.ObjectItemType)} took {damageAmount} damage. Remaining Health: {_currentHealth}");
 
             if (_currentHealth <= 0)
             {
@@ -121,7 +107,7 @@ namespace Items
 
         private void Die()
         {
-            Debug.Log($"{Type} died!");
+            Debug.Log($"{ObjectItemType} died!");
             transform.DOKill();
             
             if (GameManager.Instance)

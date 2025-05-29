@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2200497832332700291}
   - component: {fileID: 4072712737358628256}
-  - component: {fileID: 2511056730521871692}
   - component: {fileID: 6618042130188785425}
+  - component: {fileID: 1609485454595307165}
   m_Layer: 0
-  m_Name: CellPrefab
+  m_Name: DefaultCellPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,23 +89,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2511056730521871692
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703182362984730415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e90b830fcacc4c609db6974ab6779f89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cellSpriteRenderer: {fileID: 4072712737358628256}
-  xIndex: 0
-  yIndex: 0
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  placementAreaColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!61 &6618042130188785425
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -152,3 +135,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1609485454595307165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703182362984730415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9c07ca497114f7b9ea2035878f98c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cellSpriteRenderer: {fileID: 4072712737358628256}
+  xIndex: 0
+  yIndex: 0

@@ -4,10 +4,9 @@ namespace Board
 {
     public class Board : MonoBehaviour
     {
-        [SerializeField] private GameObject cellPrefab;
+        [SerializeField] private GameObject defaultCellPrefab;
+        [SerializeField] private GameObject defenceCellPrefab;
         [SerializeField] private Transform cellParent;
-        
-        [SerializeField] private float cellSpacing = 1.1f; 
         
         private Cell[,] _cells;
         
@@ -22,18 +21,29 @@ namespace Board
         {
             const int rows = Constants.BoardRows;
             const int columns = Constants.BoardColumns;
+            const float cellSpacing = Constants.CellSpacing;
             
-            var startX = -(columns / 2.0f) * cellSpacing + (cellSpacing / 2.0f);
-            var startY = (rows / 2.0f) * cellSpacing - (cellSpacing / 2.0f);
+            const float startX = -(columns / 2.0f) * cellSpacing + (cellSpacing / 2.0f);
+            const float startY = (rows / 2.0f) * cellSpacing - (cellSpacing / 2.0f);
             
             _cells = new Cell[rows, columns];
+            
+            var xPositions = new float[columns];
+            
+            for (var i = 0; i < columns; i++)
+            {
+                xPositions[i] = startX + i * cellSpacing;
+            }
 
             for (var y = 0; y < rows; y++)
             {
+                var isDefenceArea = y >= rows / 2;
+                
                 for (var x = 0; x < columns; x++)
                 {
-                    var cellObject = Instantiate(cellPrefab, cellParent);
-                    var localPosition = new Vector3(startX + x * cellSpacing, startY - y * cellSpacing, 0);
+                    var cellObject = Instantiate(isDefenceArea ? defenceCellPrefab : defaultCellPrefab, cellParent);
+
+                    var localPosition = new Vector3(xPositions[x], startY - y * cellSpacing, 0);
                     cellObject.transform.localPosition = localPosition;
                     
                     var cell = cellObject.GetComponent<Cell>();
@@ -44,8 +54,7 @@ namespace Board
                         return;
                     }
                     
-                    var isDefenceArea = y >= rows / 2;
-                    cell.Initialize(y, x, isDefenceArea);
+                    cell.Initialize(y, x);
                     _cells[y, x] = cell;
                     cellObject.name = $"Cell ({y}, {x})";
                 }

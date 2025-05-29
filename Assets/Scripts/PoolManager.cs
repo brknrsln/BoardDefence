@@ -8,7 +8,7 @@ public class PoolManager : MonoBehaviour
     
     public static PoolManager Instance { get; private set; }
 
-    private Dictionary<Constants.Type, Queue<GameObject>> _poolDictionary;
+    private Dictionary<Constants.ObjectItemType, Queue<GameObject>> _poolDictionary;
     
     private void Awake()
     {
@@ -25,38 +25,38 @@ public class PoolManager : MonoBehaviour
 
     private void InitializePools()
     {
-        _poolDictionary = new Dictionary<Constants.Type, Queue<GameObject>>();
+        _poolDictionary = new Dictionary<Constants.ObjectItemType, Queue<GameObject>>();
         var levelData = Constants.LevelDataDictionary[PlayerData.Instance.Level];
 
         foreach (var pool in pools)
         {
             var objectPool = new Queue<GameObject>();
 
-            for (var i = 0; i < levelData.TypeSizeDictionary[pool.type]; i++)
+            for (var i = 0; i < levelData.TypeSizeDictionary[pool.objectItemType]; i++)
             {
                 var obj = Instantiate(pool.prefab, transform, true);
                 obj.SetActive(false);
                 objectPool.Enqueue(obj);
             }
-            _poolDictionary.Add(pool.type, objectPool);
-            Debug.Log($"Initialized pool for: {pool.type} with size: {levelData.TypeSizeDictionary[pool.type]}");
+            _poolDictionary.Add(pool.objectItemType, objectPool);
+            Debug.Log($"Initialized pool for: {pool.objectItemType} with size: {levelData.TypeSizeDictionary[pool.objectItemType]}");
         }
     }
     
-    public GameObject SpawnFromPool(Constants.Type type, Vector3 position, Quaternion rotation)
+    public GameObject SpawnFromPool(Constants.ObjectItemType objectItemType, Vector3 position, Quaternion rotation)
     {
-        if (!_poolDictionary.ContainsKey(type))
+        if (!_poolDictionary.ContainsKey(objectItemType))
         {
-            Debug.LogWarning($"Pool with tag {type} doesn't exist.");
+            Debug.LogWarning($"Pool with tag {objectItemType} doesn't exist.");
             return null;
         }
 
-        if (_poolDictionary[type].Count == 0)
+        if (_poolDictionary[objectItemType].Count == 0)
         {
             return null;
         }
 
-        var objectToSpawn = _poolDictionary[type].Dequeue();
+        var objectToSpawn = _poolDictionary[objectItemType].Dequeue();
 
         objectToSpawn.SetActive(true);
         objectToSpawn.transform.position = position;
@@ -68,27 +68,27 @@ public class PoolManager : MonoBehaviour
         return objectToSpawn;
     }
 
-    public void ReturnToPool(Constants.Type type, GameObject objectToReturn)
+    public void ReturnToPool(Constants.ObjectItemType objectItemType, GameObject objectToReturn)
     {
-        if (!_poolDictionary.ContainsKey(type))
+        if (!_poolDictionary.ContainsKey(objectItemType))
         {
-            Debug.LogWarning($"Pool with tag {type} doesn't exist.");
+            Debug.LogWarning($"Pool with tag {objectItemType} doesn't exist.");
             Destroy(objectToReturn);
             return;
         }
 
         objectToReturn.SetActive(false);
         objectToReturn.transform.SetParent(transform);
-        _poolDictionary[type].Enqueue(objectToReturn);
+        _poolDictionary[objectItemType].Enqueue(objectToReturn);
 
         var poolableObject = objectToReturn.GetComponent<IPoolable>();
 
         poolableObject?.OnReturnToPool();
     }
 
-    private bool IsInPool(Constants.Type type)
+    private bool IsInPool(Constants.ObjectItemType objectItemType)
     {
-        return _poolDictionary[type].Count > 0;
+        return _poolDictionary[objectItemType].Count > 0;
     }
     
     public bool IsTotalEnemiesSpawned()
@@ -104,14 +104,14 @@ public class PoolManager : MonoBehaviour
         return true;
     }
     
-    public int GetCountOfTypeInPool(Constants.Type type)
+    public int GetCountOfTypeInPool(Constants.ObjectItemType objectItemType)
     {
-        if (_poolDictionary.ContainsKey(type))
+        if (_poolDictionary.ContainsKey(objectItemType))
         {
-            return _poolDictionary[type].Count;
+            return _poolDictionary[objectItemType].Count;
         }
         
-        Debug.LogWarning($"Pool with tag {type} doesn't exist.");
+        Debug.LogWarning($"Pool with tag {objectItemType} doesn't exist.");
         return 0;
     }
 }

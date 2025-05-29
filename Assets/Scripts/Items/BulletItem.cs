@@ -9,15 +9,17 @@ namespace Items
         [SerializeField] private TMPro.TMP_Text bulletText;
 
         private int _damage;
+        private int _range;
         private float _speed;
-        private Transform _targetTransform;
+        private Vector2 _targetPosition;
         private Constants.AttackDirection _attackDirection;
 
         private Sequence _attackSequence;
         
-        public void Initialize(int damage, float speed, Constants.AttackDirection attackDirection)
+        public void Initialize(int damage, int range, float speed, Constants.AttackDirection attackDirection)
         {
             _damage = damage;
+            _range = range;
             _speed = speed;
             _attackDirection = attackDirection;
             
@@ -31,15 +33,33 @@ namespace Items
             }
         }
 
-        public void SetTargetCell(Transform targetCell)
+        private void SetTarget()
         {
-            _targetTransform = targetCell;
+            var targetPoint = _range * Constants.CellSpacing;
             
-            bulletSpriteRenderer.color = Color.magenta;
+            switch (_attackDirection)
+            {
+                case Constants.AttackDirection.Forward:
+                    _targetPosition = new Vector2(transform.position.x, transform.position.y + targetPoint);
+                    break;
+                case Constants.AttackDirection.Backward:
+                    _targetPosition = new Vector2(transform.position.x, transform.position.y - targetPoint);
+                    break;
+                case Constants.AttackDirection.Left:
+                    _targetPosition = new Vector2(transform.position.x - targetPoint, transform.position.y);
+                    break;
+                case Constants.AttackDirection.Right:
+                    _targetPosition = new Vector2(transform.position.x + targetPoint, transform.position.y);
+                    break;
+            }
         }
 
         public Sequence StartMove()
         {
+            SetTarget();
+            
+            bulletSpriteRenderer.color = Color.magenta;
+            
             if (_attackSequence != null && _attackSequence.IsActive())
             {
                 _attackSequence.Kill();
@@ -48,25 +68,7 @@ namespace Items
             _attackSequence = DOTween.Sequence();
             _attackSequence.Pause();
 
-            switch (_attackDirection)
-            {
-                case Constants.AttackDirection.Forward:
-                    _attackSequence.Join(
-                        transform.DOMoveY(_targetTransform.position.y, _speed).SetEase(Ease.Linear));
-                    break;
-                case Constants.AttackDirection.Backward:
-                    _attackSequence.Join(
-                        transform.DOMoveY(_targetTransform.position.y, _speed).SetEase(Ease.Linear));
-                    break;
-                case Constants.AttackDirection.Left:
-                    _attackSequence.Join(
-                        transform.DOMoveX(_targetTransform.position.x, _speed).SetEase(Ease.Linear));
-                    break;
-                case Constants.AttackDirection.Right:
-                    _attackSequence.Join(
-                        transform.DOMoveX(_targetTransform.position.x, _speed).SetEase(Ease.Linear));
-                    break;
-            }
+            _attackSequence.Append(transform.DOMove(_targetPosition, _speed).SetEase(Ease.Linear));
 
             _attackSequence.SetLoops(-1, LoopType.Restart);
             return _attackSequence;

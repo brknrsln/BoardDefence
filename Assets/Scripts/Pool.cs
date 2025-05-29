@@ -1,8 +1,9 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [System.Serializable]
 public class Pool
 {
-    public Constants.Type type;
+    [FormerlySerializedAs("type")] public Constants.ObjectItemType objectItemType;
     public GameObject prefab;
 }

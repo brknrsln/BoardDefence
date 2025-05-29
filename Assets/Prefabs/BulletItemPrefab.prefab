@@ -150,7 +150,6 @@ GameObject:
   - component: {fileID: 4194656863167434396}
   - component: {fileID: 2798293701162692728}
   - component: {fileID: 1904292340080808244}
-  - component: {fileID: -3114278746801997064}
   m_Layer: 6
   m_Name: BulletItemPrefab
   m_TagString: BulletItem
@@ -289,33 +288,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletSpriteRenderer: {fileID: 4194656863167434396}
   bulletText: {fileID: 4636406334547531219}
---- !u!50 &-3114278746801997064
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6376629549793368880}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 0.0001
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!1 &7481717205191185183
 GameObject:
   m_ObjectHideFlags: 0
